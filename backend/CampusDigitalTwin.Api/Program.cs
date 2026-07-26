@@ -611,7 +611,7 @@ app.MapPost("/api/ai/query", [Authorize] async (AiQueryRequest request, IAiAssis
 app.MapPost("/api/emergency/sos", [Authorize(Roles = "Security,Admin")] async (EmergencyRequest request, ClaimsPrincipal user, ICampusReadService service) =>
 {
     await service.RecordEmergencyAsync(request, user);
-    return Results.Accepted(new { status = "NotConfigured", message = "Action recorded, but external integration is not configured." });
+    return Results.Json(new { status = "NotConfigured", message = "Action recorded, but external integration is not configured." }, statusCode: StatusCodes.Status202Accepted);
 }).RequireRateLimiting("sensitive");
 
 app.MapGet("/api/emergency/events", [Authorize(Roles = "Security,Admin")] async (AppDbContext db) =>

@@ -3,6 +3,7 @@ namespace CampusDigitalTwin.Api.Domain.Entities;
 public class EnergySnapshot : BaseEntity
 {
     public Guid CampusBuildingId { get; set; }
+    public CampusBuilding CampusBuilding { get; set; } = null!;
     public int ElectricityKwh { get; set; }
     public int WaterLiters { get; set; }
     public int SolarKwh { get; set; }

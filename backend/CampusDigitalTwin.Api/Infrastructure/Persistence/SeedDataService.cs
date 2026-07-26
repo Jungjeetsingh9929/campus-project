@@ -23,7 +23,7 @@ public class SeedDataService : ISeedDataService
 
     public async Task InitializeAsync()
     {
-        var migrations = await _db.Database.GetMigrationsAsync();
+        var migrations = _db.Database.GetMigrations();
         if (migrations.Any())
         {
             await _db.Database.MigrateAsync();
