@@ -771,6 +771,11 @@ static string NormalizePostgresConnectionString(string value)
     var password = Uri.UnescapeDataString(credentials.ElementAtOrDefault(1) ?? string.Empty);
     var database = uri.AbsolutePath.TrimStart('/');
     var port = uri.Port > 0 ? uri.Port : 5432;
+    var queryRequiresSsl = uri.Query.Contains("sslmode=require", StringComparison.OrdinalIgnoreCase);
+    var externalRenderHost = uri.Host.EndsWith(".render.com", StringComparison.OrdinalIgnoreCase);
+    var sslSettings = queryRequiresSsl || externalRenderHost
+        ? ";SSL Mode=Require;Trust Server Certificate=true"
+        : string.Empty;
 
-    return $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    return $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password}{sslSettings}";
 }
