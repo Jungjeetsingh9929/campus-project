@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const defaultApiBaseUrl = import.meta.env.DEV ? 'http://localhost:5151/api' : '/api';
+const defaultApiBaseUrl = '/api';
 const enableDemoFallbacks = import.meta.env.VITE_ENABLE_DEMO_FALLBACKS === 'true';
 
 export const api = axios.create({
