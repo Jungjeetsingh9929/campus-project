@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-campus_digital_twin}
+      POSTGRES_USER: ${POSTGRES_USER:-campus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your environment}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-campus} -d ${POSTGRES_DB:-campus_digital_twin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./backend/CampusDigitalTwin.Api
+    environment:
+      ConnectionStrings__DefaultConnection: ${CONNECTION_STRING:?set CONNECTION_STRING in your environment}
+      Jwt__Issuer: ${JWT_ISSUER:-CampusDigitalTwin}
+      Jwt__Audience: ${JWT_AUDIENCE:-CampusDigitalTwinWeb}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in your environment}
+      Cors__AllowedOrigins__0: ${WEB_ORIGIN:-http://localhost:5173}
+      Frontend__BaseUrl: ${WEB_ORIGIN:-http://localhost:5173}
+      SeedUsers__DefaultPassword: ${SEED_USERS_DEFAULT_PASSWORD:?set SEED_USERS_DEFAULT_PASSWORD in your environment}
+      Smtp__Host: ${SMTP__HOST:-}
+      Smtp__Port: ${SMTP__PORT:-587}
+      Smtp__Username: ${SMTP__USERNAME:-}
+      Smtp__Password: ${SMTP__PASSWORD:-}
+      Smtp__From: ${SMTP__FROM:-}
+    ports:
+      - "5151:8080"
+    volumes:
+      - api_uploads:/app/wwwroot/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        VITE_ENABLE_LIVE_API: ${VITE_ENABLE_LIVE_API:-true}
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  api_uploads:
