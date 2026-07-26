@@ -16,6 +16,50 @@ import { UserDto } from '../api/contracts';
 import { CampusUser, Role } from '../types';
 
 const SESSION_KEY = 'campus-unified.session-marker';
+const staticDemoAuthEnabled = import.meta.env.VITE_ENABLE_STATIC_DEMO_AUTH === 'true';
+
+const staticDemoUsers: UserDto[] = [
+  {
+    Id: 'demo-admin',
+    Name: 'Admin User',
+    Email: 'admin@campus.edu',
+    Role: 'Admin',
+    Department: 'Administration',
+    RollNumber: undefined,
+    Phone: '+91 90000 10001',
+    IsActive: true,
+  },
+  {
+    Id: 'demo-student',
+    Name: 'Student User',
+    Email: 'student@campus.edu',
+    Role: 'Student',
+    Department: 'Computer Science',
+    RollNumber: 'CS-2026-101',
+    Phone: '+91 90000 10002',
+    IsActive: true,
+  },
+  {
+    Id: 'demo-faculty',
+    Name: 'Faculty User',
+    Email: 'faculty@campus.edu',
+    Role: 'Faculty',
+    Department: 'IT',
+    RollNumber: undefined,
+    Phone: '+91 90000 10003',
+    IsActive: true,
+  },
+  {
+    Id: 'demo-security',
+    Name: 'Security User',
+    Email: 'security@campus.edu',
+    Role: 'Security',
+    Department: 'Security',
+    RollNumber: undefined,
+    Phone: '+91 90000 10004',
+    IsActive: true,
+  },
+];
 
 type StoredSession = {
   refreshTokenExpiresAt: string;
@@ -85,6 +129,10 @@ function mapUser(user: UserDto): CampusUser {
   };
 }
 
+function findStaticDemoUser(email: string) {
+  return staticDemoUsers.find((user) => user.Email.toLowerCase() === email.trim().toLowerCase());
+}
+
 async function loadUsersForRole(role: Role) {
   if (role !== 'Admin') {
     return [];
@@ -144,6 +192,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
   loginWithCredentials: async (email, password) => {
+    if (staticDemoAuthEnabled) {
+      const demoUser = findStaticDemoUser(email);
+      if (!demoUser || !password.trim()) {
+        throw new Error('Use one of the demo emails and enter any password to open the static demo.');
+      }
+
+      applyAuthenticatedUser(set, demoUser, {
+        token: `static-demo-${demoUser.Id}`,
+        refreshToken: '',
+        accessTokenExpiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        refreshTokenExpiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      }, staticDemoUsers.map(mapUser));
+      return;
+    }
+
     try {
       const session = await login({ email, password });
       const storedSession = {
@@ -190,6 +253,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
   registerStudent: async (payload) => {
+    if (staticDemoAuthEnabled) {
+      void payload;
+      throw new Error('Registration requires the backend API. GitHub Pages is a frontend-only demo.');
+    }
+
     await registerStudentApi(payload);
   },
   resetPassword: async (email, newPassword) => {
@@ -197,12 +265,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await forgotPasswordApi(email);
   },
   forgotPassword: async (email) => {
+    if (staticDemoAuthEnabled) {
+      void email;
+      throw new Error('Password reset requires the backend API. GitHub Pages is a frontend-only demo.');
+    }
+
     await forgotPasswordApi(email);
   },
   completePasswordReset: async (token, newPassword, confirmPassword) => {
+    if (staticDemoAuthEnabled) {
+      void token;
+      void newPassword;
+      void confirmPassword;
+      throw new Error('Password reset requires the backend API. GitHub Pages is a frontend-only demo.');
+    }
+
     await resetPasswordApi({ token, newPassword, confirmPassword });
   },
   changePassword: async (currentPassword, newPassword) => {
+    if (staticDemoAuthEnabled) {
+      void currentPassword;
+      void newPassword;
+      throw new Error('Password changes require the backend API. GitHub Pages is a frontend-only demo.');
+    }
+
     await changePasswordApi({ currentPassword, newPassword });
     get().signOut();
   },

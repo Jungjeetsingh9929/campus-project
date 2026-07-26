@@ -4,6 +4,33 @@ Recommended platform: Render.
 
 Render supports Docker services, static sites, environment variables, and hosted PostgreSQL, which matches this project well.
 
+No-card alternative: GitHub Pages can host a frontend-only static demo. It does not run the ASP.NET API, PostgreSQL, secure backend authentication, uploads, email reset, or SignalR backend.
+
+## No-card GitHub Pages demo
+
+1. Open the GitHub repository.
+2. Go to **Settings**.
+3. Go to **Pages**.
+4. Under **Build and deployment**, choose **GitHub Actions**.
+5. Go to **Actions**.
+6. Run or wait for the `deploy-github-pages` workflow.
+7. Open:
+
+```text
+https://jungjeetsingh9929.github.io/campus-project/
+```
+
+Demo login emails:
+
+```text
+admin@campus.edu
+student@campus.edu
+faculty@campus.edu
+security@campus.edu
+```
+
+Enter any password in GitHub Pages demo mode. This is intentionally not production authentication.
+
 ## What you need
 
 - GitHub account

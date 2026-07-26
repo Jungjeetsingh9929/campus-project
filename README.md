@@ -173,6 +173,20 @@ docker compose config
 docker compose build
 ```
 
+## No-Card Online Demo
+
+GitHub Pages can host the frontend-only demo without Render or card details.
+
+Enable GitHub Pages with **GitHub Actions** in repository settings, then run the `deploy-github-pages` workflow.
+
+Demo URL:
+
+```text
+https://jungjeetsingh9929.github.io/campus-project/
+```
+
+This mode sets `VITE_ENABLE_STATIC_DEMO_AUTH=true`, accepts the demo emails listed above with any password, and is not real backend authentication.
+
 ## CI
 
 GitHub Actions runs:

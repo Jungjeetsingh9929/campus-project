@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 
 type Mode = 'login' | 'register' | 'reset';
+const staticDemoAuthEnabled = import.meta.env.VITE_ENABLE_STATIC_DEMO_AUTH === 'true';
+const demoAccounts = ['admin@campus.edu', 'student@campus.edu', 'faculty@campus.edu', 'security@campus.edu'];
 
 export function LoginPage() {
   const [mode, setMode] = useState<Mode>('login');
@@ -79,6 +81,11 @@ export function LoginPage() {
             <p className="mt-4 max-w-xl text-sm leading-6 text-slate-300">
               Role-based access controls keep students, faculty, administrators, and security teams inside the right workspace.
             </p>
+            {staticDemoAuthEnabled && (
+              <div className="mt-5 rounded-3xl border border-amber-200/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-50">
+                GitHub Pages demo mode is frontend-only. It does not use real backend authentication, database writes, email reset, or secure sessions.
+              </div>
+            )}
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {[
@@ -121,6 +128,24 @@ export function LoginPage() {
             </div>
 
             <div className="mt-6 grid gap-4">
+              {staticDemoAuthEnabled && mode === 'login' && (
+                <div className="rounded-2xl border border-cyan-200/20 bg-cyan-300/10 p-4 text-xs leading-6 text-cyan-50">
+                  Use any demo email below and enter any password:
+                  <div className="mt-2 grid gap-1">
+                    {demoAccounts.map((account) => (
+                      <button
+                        key={account}
+                        type="button"
+                        onClick={() => setEmail(account)}
+                        className="rounded-xl bg-white/10 px-3 py-1.5 text-left font-mono text-[11px] text-cyan-50 transition hover:bg-white/15"
+                      >
+                        {account}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {mode === 'register' && (
                 <>
                   <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-cyan-300/50" placeholder="Full name" />
