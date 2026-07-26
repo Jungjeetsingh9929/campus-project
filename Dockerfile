@@ -11,6 +11,8 @@ RUN pnpm build
 
 FROM nginx:1.27-alpine
 ENV PORT=10000
+ENV API_ORIGIN=https://campus-project-v12k.onrender.com
+ENV API_WS_ORIGIN=wss://campus-project-v12k.onrender.com
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 10000
