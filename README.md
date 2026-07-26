@@ -187,6 +187,10 @@ https://jungjeetsingh9929.github.io/campus-project/
 
 This mode sets `VITE_ENABLE_STATIC_DEMO_AUTH=true` and `VITE_ENABLE_LOCAL_DEMO_MODE=true`, accepts the demo emails listed above with any password, and is not real backend authentication.
 
+## Render Web Services
+
+For the full backend version using manual Render **Web Service** screens instead of Blueprint, follow [RENDER_WEB_SERVICES.md](./RENDER_WEB_SERVICES.md).
+
 ## CI
 
 GitHub Actions runs:
