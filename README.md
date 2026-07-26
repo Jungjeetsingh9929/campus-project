@@ -89,7 +89,7 @@ dotnet run --project backend/CampusDigitalTwin.Api/CampusDigitalTwin.Api.csproj
 
 ## Database Migrations
 
-The app no longer uses `EnsureCreatedAsync()` and runs `Database.MigrateAsync()` on startup.
+On startup, the API runs EF migrations when migration files exist. If no generated migration files exist yet, it falls back to `EnsureCreatedAsync()` so first Render deploys can create the PostgreSQL schema instead of failing with missing tables.
 
 Generate and apply the initial migration on a machine with the .NET SDK:
 
@@ -98,7 +98,7 @@ dotnet ef migrations add InitialProductionSchema --project backend/CampusDigital
 dotnet ef database update --project backend/CampusDigitalTwin.Api --startup-project backend/CampusDigitalTwin.Api
 ```
 
-This Codex environment did not include the `dotnet` CLI, so generated migration C# files could not be produced or verified locally. Review generated SQL before applying it to production.
+This Codex environment did not include the `dotnet` CLI, so generated migration C# files could not be produced or verified locally. Review generated SQL before applying it to production, then keep migration files in the repo for stricter production releases.
 
 ## Seed Accounts
 
@@ -185,7 +185,7 @@ Demo URL:
 https://jungjeetsingh9929.github.io/campus-project/
 ```
 
-This mode sets `VITE_ENABLE_STATIC_DEMO_AUTH=true`, accepts the demo emails listed above with any password, and is not real backend authentication.
+This mode sets `VITE_ENABLE_STATIC_DEMO_AUTH=true` and `VITE_ENABLE_LOCAL_DEMO_MODE=true`, accepts the demo emails listed above with any password, and is not real backend authentication.
 
 ## CI
 

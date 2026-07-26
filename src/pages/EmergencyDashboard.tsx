@@ -16,6 +16,7 @@ const actionNotes: Record<string, string> = {
 };
 
 export function EmergencyDashboard() {
+  const localDemoMode = import.meta.env.VITE_ENABLE_LOCAL_DEMO_MODE === 'true';
   const route = useMemo(() => getRoutePlan('block-f', 'block-e', 'Emergency route'), []);
   const actor = useAuthStore((state) => state.name);
   const emergencyEvents = useCampusStore((state) => state.emergencyEvents);
@@ -38,7 +39,7 @@ export function EmergencyDashboard() {
       severity: eventKind === 'SOS button' || eventKind === 'Trigger sirens' ? 'Critical' : 'High',
       assignedTeam: eventKind.includes('Medical') ? 'Clinic Response Team' : 'Security Response Team',
     };
-    const response = await createEmergency(payload);
+    const response = localDemoMode ? null : await createEmergency(payload);
     addEmergencyEvent({
       kind: payload.kind,
       location: payload.location,
@@ -47,7 +48,7 @@ export function EmergencyDashboard() {
       severity: payload.severity as any,
       assignedTeam: payload.assignedTeam,
     }, actor);
-    setMessage((response.data as { message?: string })?.message ?? 'Action recorded, but external integration is not configured.');
+    setMessage((response?.data as { message?: string } | undefined)?.message ?? 'Action recorded in frontend demo mode. External integration is not configured.');
   }
 
   return (

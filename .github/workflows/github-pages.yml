@@ -31,6 +31,7 @@ jobs:
       - run: pnpm build
         env:
           VITE_ENABLE_STATIC_DEMO_AUTH: true
+          VITE_ENABLE_LOCAL_DEMO_MODE: true
           VITE_ENABLE_LIVE_API: false
           VITE_ENABLE_DEMO_FALLBACKS: true
           VITE_API_BASE_URL: /api

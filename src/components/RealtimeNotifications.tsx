@@ -11,7 +11,7 @@ export function RealtimeNotifications() {
   const addNotification = useCampusStore((state) => state.addNotification);
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
+    if (import.meta.env.VITE_ENABLE_LOCAL_DEMO_MODE === 'true' || !isAuthenticated || !token) {
       return;
     }
 

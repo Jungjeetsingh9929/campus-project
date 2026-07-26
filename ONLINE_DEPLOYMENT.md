@@ -29,7 +29,7 @@ faculty@campus.edu
 security@campus.edu
 ```
 
-Enter any password in GitHub Pages demo mode. This is intentionally not production authentication.
+Enter any password in GitHub Pages demo mode. This is intentionally not production authentication. Complaint/admin/emergency actions are stored in the browser as local demo state, not in PostgreSQL.
 
 ## What you need
 

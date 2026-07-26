@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,12 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"];
 builder.Services.AddCors(options =>
@@ -138,6 +145,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.Use(async (context, next) =>
 {
@@ -648,7 +657,7 @@ static void SetRefreshCookie(HttpContext http, string refreshToken, DateTimeOffs
     {
         HttpOnly = true,
         Secure = !isDevelopment,
-        SameSite = SameSiteMode.Strict,
+        SameSite = isDevelopment ? SameSiteMode.Strict : SameSiteMode.None,
         Expires = expiresAt,
         Path = "/api/auth",
     });
@@ -659,7 +668,8 @@ static void ClearRefreshCookie(HttpContext http)
     http.Response.Cookies.Delete("campus_refresh", new CookieOptions
     {
         HttpOnly = true,
-        SameSite = SameSiteMode.Strict,
+        Secure = !http.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment(),
+        SameSite = http.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment() ? SameSiteMode.Strict : SameSiteMode.None,
         Path = "/api/auth",
     });
 }

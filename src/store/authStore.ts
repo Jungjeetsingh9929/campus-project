@@ -309,6 +309,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
+    if (staticDemoAuthEnabled) {
+      set((state) => ({
+        users: state.users.map((item) => (item.id === id ? { ...item, ...changes } : item)),
+      }));
+      return;
+    }
+
     const updated = await updateUserApi(id, {
       Id: user.id,
       Name: changes.name ?? user.name,

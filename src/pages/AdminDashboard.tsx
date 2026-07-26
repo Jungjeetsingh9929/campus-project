@@ -11,6 +11,7 @@ const statuses: ComplaintStatus[] = ['Open', 'Assigned', 'In Progress', 'Resolve
 const roles: Role[] = ['Student', 'Faculty', 'Admin', 'Security'];
 
 export function AdminDashboard() {
+  const localDemoMode = import.meta.env.VITE_ENABLE_LOCAL_DEMO_MODE === 'true';
   const buildings = useCampusStore((state) => state.buildings);
   const complaints = useCampusStore((state) => state.complaints);
   const wifiAccessPoints = useCampusStore((state) => state.wifiAccessPoints);
@@ -174,15 +175,17 @@ export function AdminDashboard() {
                   const assignedDepartment = (document.getElementById('admin-dept') as HTMLInputElement).value;
                   const estimatedCompletion = (document.getElementById('admin-eta') as HTMLInputElement).value;
                   const adminRemarks = (document.getElementById('admin-note') as HTMLTextAreaElement).value;
-                  const uploaded = await Promise.all(resolutionFiles.map(uploadFile));
-                  await updateComplaint(selected.id, {
-                    status,
-                    technician,
-                    assignedDepartment,
-                    estimatedCompletion,
-                    adminRemarks,
-                    resolutionEvidence: uploaded.map((file) => file.Url),
-                  });
+                  if (!localDemoMode) {
+                    const uploaded = await Promise.all(resolutionFiles.map(uploadFile));
+                    await updateComplaint(selected.id, {
+                      status,
+                      technician,
+                      assignedDepartment,
+                      estimatedCompletion,
+                      adminRemarks,
+                      resolutionEvidence: uploaded.map((file) => file.Url),
+                    });
+                  }
                   updateComplaintWorkflow(selected.id, {
                     status,
                     technician,
